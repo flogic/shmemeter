@@ -269,4 +269,62 @@ describe 'delegation' do
       @object.forwarded_method.should == @value
     end
   end
+  
+  describe 'of messages to a different message on an object which may be missing' do
+    before :each do
+      @class = Class.new
+    end
+    
+    it 'should accept a method name' do
+      lambda { @class.delegate :forwarded_method, :to => :target, :as => :target_method, :missing_target => '' }.should_not raise_error(ArgumentError)
+    end
+    
+    it 'should not accept multiple method names' do
+      lambda { @class.delegate :method1, :method2, :to => :target, :as => :target_method, :missing_target => '' }.should raise_error(ArgumentError)
+    end
+    
+    it 'should require a method name' do
+      lambda { @class.delegate :to => :target, :as => :target_method, :missing_target => '' }.should raise_error(ArgumentError)
+    end
+  end
+  
+  describe 'of a message to a different message on an object which may be missing' do
+    before :each do
+      @value = val = 'val ue'
+      @class = Struct.new(:target) do
+        delegate :forwarded_method, :to => :target, :as => :target_method, :missing_target => val
+      end
+      
+      @target = stub('target')
+      @object = @class.new(@target)
+    end
+    
+    it 'should forward the message' do
+      @target.expects(:target_method)
+      @object.forwarded_method
+    end
+    
+    it 'should pass along an argument' do
+      arg = stub('arg')
+      @target.expects(:target_method).with(arg)
+      @object.forwarded_method(arg)
+    end
+    
+    it 'should pass along multiple arguments' do
+      args = Array.new(3) { stub('arg') }
+      @target.expects(:target_method).with(*args)
+      @object.forwarded_method(*args)
+    end
+    
+    it 'should return the value from the object' do
+      val = stub('val')
+      @target.stubs(:target_method).returns(val)
+      @object.forwarded_method.should == val
+    end
+    
+    it 'should return the substitute value when the object is missing' do
+      @object.stubs(:target).returns(nil)
+      @object.forwarded_method.should == @value
+    end
+  end
 end
