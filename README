@@ -1,0 +1,51 @@
+= Shmemeter
+<b>Version 0.2.0 (21 Apr, 2008)</b>
+
+Author::    Yossef Mendelssohn (ymendel@pobox.com)
+Copyright:: Copyright (c) 2008, Flawed Logic, OG Consulting, Yossef Mendelssohn
+License::   MIT License.  See MIT-LICENSE file for more details.
+
+Shmemeter is a Ruby on Rails plugin that improves delegation to allow for changing the method called on the receiver (something Forwardable gives you and Rails delegation doesn't) as well as setting a value to use if the receiver is missing.
+
+== Installation
+
+Unpack the shmemeter directory into vendor/plugins/ in your rails project.
+A definitive public revision control access point is forthcoming that will make it possible to install the plugin via script/plugin install.
+
+== Reasoning
+
+It can be hard to handle all those Law (or Suggestion) of Demeter cases when ActiveRecord and associations make it so tempting to just *know* what's going on a few method calls down the line. Write wrapper methods for every attribute or method you might care about on another object gets old, especially when some associations are optional and you need to guard against NoMethodError from calling methods on nil. You can only do so much before you throw up your hands in disgust and shout "SCREW YOU, DEMETER!"
+
+This plugin gives you an easier way. Use it and just mumble "demeter shmemeter" under your breath from time to time.
+
+== Using Shmemeter
+
+Shmemeter adds two extra options for delegation.
+
+You can still delegate normally
+
+    class User < ActiveRecord::Base
+      delegate :username, :to => :login  # Easier than def username() login.username; end
+    end
+
+You can handle a missing target
+
+    class User < ActiveRecord::Base
+      delegate :username, :to => :login, :missing_target => ''  # Easier than def username() if login then login.username else '' end; end
+    end
+
+You can call a different method on the target
+
+    class User < ActiveRecord::Base
+      delegate :username, :to => :login, :as => :name  # Easier than def username() login.name; end
+    end
+
+And finally, you can call a different method on the target while handling a missing target
+
+    class User < ActiveRecord::Base
+      delegate :username, :to => :login, :as => :name, :missing_target => ''  # Easier than def username() if login then login.name else '' end; end
+    end
+
+== Version history:
+
+  0.2.0 - Initial release
