@@ -160,6 +160,24 @@ describe 'delegation' do
     end
   end
   
+  describe 'of messages to a different message on the object' do
+    before :each do
+      @class = Class.new
+    end
+    
+    it 'should accept a method name' do
+      lambda { @class.delegate :forwarded_method, :to => :target, :as => :target_method }.should_not raise_error(ArgumentError)
+    end
+    
+    it 'should not accept multiple method names' do
+      lambda { @class.delegate :method1, :method2, :to => :target, :as => :target_method }.should raise_error(ArgumentError)
+    end
+    
+    it 'should require a method name' do
+      lambda { @class.delegate :to => :target, :as => :target_method }.should raise_error(ArgumentError)
+    end
+  end
+  
   describe 'of a message to a different message on an object' do
     before :each do
       @class = Struct.new(:target) do

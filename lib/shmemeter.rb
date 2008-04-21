@@ -10,6 +10,7 @@ class Module
     end
     
     if as = options[:as]
+      raise ArgumentError, "Can only delegate one method at a time when changing target method name" unless methods.size == 1
       methods.each do |method|
         module_eval(<<-EOS, "(__DELEGATION__)", 1)
           def #{method}(*args, &block)
