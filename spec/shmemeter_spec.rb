@@ -3,6 +3,36 @@ require File.dirname(__FILE__) + '/spec_helper'
 setup_rails_environment
 
 describe 'delegation' do
+  describe 'setup' do
+    before :each do
+      @class = Class.new
+    end
+    
+    it 'should require a final hash argument' do
+      lambda { @class.delegate }.should raise_error(ArgumentError)
+    end
+    
+    it 'should accept a final hash argument with a target' do
+      lambda { @class.delegate :to => :target }.should_not raise_error(ArgumentError)
+    end
+    
+    it 'should require a target in the final hash argument' do
+      lambda { @class.delegate :key => :value }.should raise_error(ArgumentError)
+    end
+    
+    it 'should accept a method name' do
+      lambda { @class.delegate :method, :to => :target }.should_not raise_error(ArgumentError)
+    end
+    
+    it 'should accept multiple method names' do
+      lambda { @class.delegate :method1, :method2, :to => :target }.should_not raise_error(ArgumentError)
+    end
+    
+    it 'should accept no method name' do
+      lambda { @class.delegate :to => :target }.should_not raise_error(ArgumentError)
+    end
+  end
+  
   describe 'of a message to an object' do
     before :each do
       @class = Struct.new(:target) do
