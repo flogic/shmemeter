@@ -129,4 +129,38 @@ describe 'delegation' do
       @object.other_method.should == val
     end
   end
+  
+  describe 'of a message to a different message on an object' do
+    before :each do
+      @class = Struct.new(:target) do
+        delegate :forwarded_method, :to => :target, :as => :target_method
+      end
+      
+      @target = stub('target')
+      @object = @class.new(@target)
+    end
+    
+    it 'should forward the message' do
+      @target.expects(:target_method)
+      @object.forwarded_method
+    end
+    
+    it 'should pass along an argument' do
+      arg = stub('arg')
+      @target.expects(:target_method).with(arg)
+      @object.forwarded_method(arg)
+    end
+    
+    it 'should pass along multiple arguments' do
+      args = Array.new(3) { stub('arg') }
+      @target.expects(:target_method).with(*args)
+      @object.forwarded_method(*args)
+    end
+    
+    it 'should return the value from the object' do
+      val = stub('val')
+      @target.stubs(:target_method).returns(val)
+      @object.forwarded_method.should == val
+    end
+  end
 end

@@ -2,6 +2,7 @@ $:.unshift(File.dirname(__FILE__) + '/../lib/')
 
 require 'rubygems'
 require 'mocha'
+require 'shmemeter'
 
 Spec::Runner.configure do |config|
   config.mock_with :mocha
