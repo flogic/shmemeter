@@ -7,7 +7,7 @@ Spec::Runner.configure do |config|
   config.mock_with :mocha
 end
 
-def setup_rails_database
+def setup_rails_environment
   dir = File.dirname(__FILE__)
   
   ENV['RAILS_ENV'] ||= 'test'
